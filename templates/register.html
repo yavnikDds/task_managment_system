@@ -4,54 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h2>Register</h2>
-    <form method="POST" novalidate>
-        {{ form.hidden_tag() }}  <!-- CSRF Protection -->
-    
-        <!-- Username Field -->
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=20) }}
-            {% for error in form.username.errors %}
-                <span style="color: red;">{{ error }}</span>
-            {% endfor %}
-        </p>
-    
-        <!-- Password Field -->
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=20) }}
-            {% for error in form.password.errors %}
-                <span style="color: red;">{{ error }}</span>
-            {% endfor %}
-        </p>
-    
-        <!-- Confirm Password Field -->
-        <p>
-            {{ form.confirm_password.label }}<br>
-            {{ form.confirm_password(size=20) }}
-            {% for error in form.confirm_password.errors %}
-                <span style="color: red;">{{ error }}</span>
-            {% endfor %}
-        </p>
-    
-        <!-- Submit Button -->
-        <p>
-            {{ form.submit() }}
-        </p>
-    </form>
+<body class="bg-light">
 
-    <!-- Flash Messages for Success/Error -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <ul>
-            {% for category, message in messages %}
-                <li style="color: {{ 'red' if category == 'danger' else 'green' }}">{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Register</h2>
+
+        <!-- Flash Messages for Success/Error -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show" role="alert">
+                    <ul class="mb-0">
+                    {% for category, message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Registration Form -->
+        <form method="POST" class="border p-4 rounded shadow-sm bg-white" novalidate>
+
+            {{ form.hidden_tag() }}  <!-- CSRF Protection -->
+
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                {{ form.username(class="form-control", placeholder="Enter username") }}
+                {% for error in form.username.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                {{ form.password(class="form-control", placeholder="Enter password") }}
+                {% for error in form.password.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="confirm_password" class="form-label">Confirm Password</label>
+                {{ form.confirm_password(class="form-control", placeholder="Confirm password") }}
+                {% for error in form.confirm_password.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3 text-center">
+                {{ form.submit(class="btn btn-primary w-100") }}
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Include Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

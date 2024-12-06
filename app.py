@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from wtforms import StringField, SelectField, PasswordField, SubmitField, TextAreaField, DateField   # Importing necessary field types
 # from wtforms import   # Import SelectField for status
 from wtforms.validators import DataRequired, Length, EqualTo  # Importing validators for form fields
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm  # Importing Flask-WTF for form handling
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from datetime import datetime, timedelta
@@ -85,7 +86,9 @@ def register():
             flash('Username already exists. Please choose a different one.', 'danger')  # Show error message
         else:
             # If valid, create a new user object
-            new_user = User(username=form.username.data, password=form.password.data)
+            # new_user = User(username=form.username.data, password=form.password.data)
+            hashed_password = generate_password_hash(form.password.data, method='pbkdf2:sha256')  # Hash the password
+            new_user = User(username=form.username.data, password=hashed_password)
             db.session.add(new_user)  # Add the new user to the database
             db.session.commit()  # Commit the session to save changes
             print("User created!")  # Debug: Check if the user is successfully added
@@ -148,7 +151,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        if user and user.password == form.password.data:  # Simplified for demo purposes
+        if user and check_password_hash(user.password, form.password.data):  # Simplified for demo purposes
             login_user(user)
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))  # Redirect to dashboard after login
@@ -177,7 +180,7 @@ def edit_task(task_id):
     form.due_date.data = task.due_date
     form.status.data = task.status
 
-    return render_template('add_task.html', form=form)  # Reuse the add_task.html template for editing
+    return render_template('add_task.html', form=form, task=task)  # Reuse the add_task.html template for editing
 
 @app.route('/delete_task/<int:task_id>', methods=['GET', 'POST'])
 @login_required
